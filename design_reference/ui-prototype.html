@@ -1,0 +1,50 @@
+<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mine Launcher</title>
+<style>
+:root{--bg:#0b0f0c;--p:#141b16;--l:#26362b;--g:#3ddc2b;--t:#f2f7f2;--m:#93a597}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:14px system-ui,sans-serif;padding-bottom:76px}
+header{display:flex;align-items:center;gap:10px;padding:12px 16px;position:sticky;top:0;background:#0b0f0cee;border-bottom:1px solid var(--l);z-index:5}
+header img{width:40px;height:40px;border-radius:50%}header b{font-size:16px;letter-spacing:.5px}header b span{color:var(--g)}
+main{padding:14px;max-width:720px;margin:auto}.page{display:none}.page.active{display:block}
+h2{font-size:16px;margin:4px 0 12px}.card{background:var(--p);border:1px solid var(--l);border-radius:16px;padding:14px;margin-bottom:10px}
+.m{color:var(--m);font-size:12px;line-height:1.5}.row{display:flex;align-items:center;gap:12px}.grow{flex:1}
+.hero{background:linear-gradient(135deg,#143d14,#0e1f12);border:1px solid #2f6b2a;border-radius:20px;padding:20px;margin-bottom:12px}
+.hero h1{font-size:22px;margin:0 0 6px}.btn{border:0;border-radius:12px;padding:12px 18px;background:var(--g);color:#06150a;font-weight:800;width:100%;margin-top:10px}
+.btn.o{background:none;border:1px solid var(--g);color:var(--g)}.btn:disabled{opacity:.45}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.tile{background:var(--p);border:1px solid var(--l);border-radius:14px;padding:14px;text-align:center}.tile b{display:block;font-size:24px}
+input[type=text],select{width:100%;background:#0e1410;color:var(--t);border:1px solid var(--l);border-radius:10px;padding:11px;margin:6px 0}
+.pill{background:none;border:1px solid var(--g);color:var(--g);border-radius:8px;padding:5px 9px;font-size:11px}.ic{font-size:22px;width:38px;text-align:center}
+canvas{image-rendering:pixelated;width:96px;height:96px;background:#0e1410;border:1px solid var(--l);border-radius:10px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0d130fF5;border-top:1px solid var(--l);padding:8px 2px calc(8px + env(safe-area-inset-bottom))}
+nav button{flex:1;border:0;background:none;color:var(--m);font-size:10px}nav button span{display:block;font-size:19px}nav button.on{color:var(--g)}
+</style></head><body>
+<header><img src="mine-launcher-logo.png" alt=""><b>MINE <span>LAUNCHER</span></b></header>
+<main>
+<section class="page active" id="home"><div class="hero"><div class="m">JAVA EDITION • ANDROID</div><h1>अगली दुनिया यहीं से शुरू</h1><div class="m">खाता: <b id="who">कोई नहीं</b> • वर्ज़न: <b id="ver">चुना नहीं</b></div><button class="btn" onclick="go('versions')">▶ वर्ज़न चुनें</button></div>
+<div class="grid"><div class="tile" onclick="go('account')"><b>👤</b>खाता और स्किन</div><div class="tile" onclick="go('versions')"><b>▦</b>वर्ज़न</div><div class="tile" onclick="go('files')"><b>📁</b>फ़ाइलें और मॉड</div><div class="tile" onclick="go('settings')"><b>⚙</b>सेटिंग्स</div></div>
+<div class="card m" style="margin-top:12px">⚠ UI प्रीव्यू: गेम इंजन अभी जुड़ा नहीं है, इसलिए "खेलें" काम नहीं करेगा।</div></section>
+<section class="page" id="account"><h2>खाता</h2>
+<div class="card"><b>ऑफ़लाइन खाता</b><div class="m">बिना इंटरनेट के सिर्फ़ नाम से खेलें (सिर्फ़ सिंगल-प्लेयर / ऑफ़लाइन सर्वर)।</div><input type="text" id="nm" maxlength="16" placeholder="प्लेयर नाम"><button class="btn" onclick="saveNm()">खाता सेव करें</button></div>
+<div class="card"><b>Microsoft खाता</b><div class="m">असली लॉगिन इंजन जुड़ने के बाद उपलब्ध होगा।</div><button class="btn o" disabled>Microsoft से लॉगिन</button></div>
+<div class="card"><b>स्किन अपलोड</b><div class="row" style="margin-top:8px"><canvas id="cv" width="64" height="64"></canvas><div class="grow m" id="skm">64×64 या 64×32 की PNG चुनें।</div></div><input type="file" id="fl" accept="image/png" hidden onchange="skin(this)"><button class="btn o" onclick="fl.click()">PNG चुनें</button></div></section>
+<section class="page" id="versions"><h2>वर्ज़न</h2><div class="card m">यह सूची डेमो है। असली सूची Mojang के version manifest से आएगी।</div><div id="vl"></div></section>
+<section class="page" id="files"><h2>फ़ाइलें और मॉड</h2><div id="fd"></div><input type="file" id="imp" multiple hidden onchange="imp2(this)"><button class="btn o" onclick="imp.click()">＋ फ़ाइल इम्पोर्ट (mod / pack / shader)</button><div class="m" id="im" style="margin-top:8px"></div></section>
+<section class="page" id="settings"><h2>सेटिंग्स</h2>
+<div class="card"><b>RAM</b><select><option>1 GB</option><option selected>2 GB</option><option>3 GB</option></select><b>रेंडरर</b><select><option>Auto</option><option>OpenGL</option><option>Vulkan</option></select></div>
+<div class="card row"><img src="mine-launcher-logo.png" width="56" style="border-radius:50%"><div><b>Mine Launcher</b><div class="m">वर्ज़न 0.1.3 • Mojang/Microsoft से जुड़ा नहीं</div></div></div></section>
+</main>
+<nav><button class="on" data-p="home" onclick="go('home')"><span>⌂</span>होम</button><button data-p="versions" onclick="go('versions')"><span>▦</span>वर्ज़न</button><button data-p="account" onclick="go('account')"><span>👤</span>खाता</button><button data-p="files" onclick="go('files')"><span>📁</span>फ़ाइलें</button><button data-p="settings" onclick="go('settings')"><span>⚙</span>सेटिंग</button></nav>
+<script>
+var $=function(i){return document.getElementById(i)},st=['home'];
+function go(id,back){if(!back&&st[st.length-1]!==id)st.push(id);document.querySelectorAll('.page').forEach(function(p){p.classList.toggle('active',p.id===id)});document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.dataset.p===id)});scrollTo(0,0)}
+window.mlBack=function(){if(st.length>1){st.pop();go(st[st.length-1],true);return true}return false};
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function saveNm(){var n=$('nm').value.trim();if(!/^\w{3,16}$/.test(n)){alert('नाम 3–16 अक्षर: अंग्रेज़ी अक्षर, अंक या _');return}ls('name',n);$('who').textContent=n+' (ऑफ़लाइन)'}
+var n0=ls('name');if(n0){$('nm').value=n0;$('who').textContent=n0+' (ऑफ़लाइन)'}
+function skin(f){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){if(im.width!==64||(im.height!==64&&im.height!==32)){$('skm').textContent='❌ साइज़ '+im.width+'×'+im.height+' है, 64×64 या 64×32 चाहिए';return}var c=$('cv').getContext('2d');c.clearRect(0,0,64,64);c.drawImage(im,0,0);$('skm').textContent='✅ स्किन तैयार ('+im.width+'×'+im.height+')'};im.src=r.result};if(f.files[0])r.readAsDataURL(f.files[0])}
+var V=['1.21.8','1.21.4','1.20.4','1.19.4','1.18.2','1.16.5','1.12.2','1.8.9'];
+$('vl').innerHTML=V.map(function(v,i){return '<div class="card row"><div class="ic">🟩</div><div class="grow"><b>'+v+'</b><div class="m">Java Edition</div></div><button class="pill" onclick="pick(\''+v+'\')">चुनें</button></div>'}).join('');
+function pick(v){$('ver').textContent=v;go('home')}
+var D=[['🧩','mods','Fabric / Forge मॉड'],['📦','resourcepacks','रिसोर्स पैक'],['✨','shaderpacks','शेडर'],['🌍','saves','वर्ल्ड'],['🖼','screenshots','स्क्रीनशॉट'],['📝','logs','लॉग']];
+$('fd').innerHTML=D.map(function(d){return '<div class="card row"><div class="ic">'+d[0]+'</div><div class="grow"><b>'+d[1]+'</b><div class="m">'+d[2]+'</div></div><span class="pill">खोलें</span></div>'}).join('');
+function imp2(f){$('im').textContent=f.files.length+' फ़ाइल चुनी गई। असली कॉपी इंजन जुड़ने के बाद होगी।'}
+</script></body></html>
